@@ -1,3 +1,7 @@
+CREATE DATABASE project;
+
+\c project;
+
 BEGIN;
 
 CREATE TABLE Passwords (
