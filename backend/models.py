@@ -10,7 +10,7 @@ class NoteShare(Base):
     __tablename__ = "note_shares"
     note_id = Column(UUID(as_uuid=True), ForeignKey("notes.id"), primary_key=True)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), primary_key=True)
-    can_edit = Column(Boolean, default=False) # Rola: czy może edytować?
+    can_edit = Column(Boolean, default=False) 
 
 class Password(Base):
     __tablename__ = "passwords"
@@ -18,6 +18,9 @@ class Password(Base):
     hash = Column(String, nullable=False)
     salt = Column(String, nullable=False)
     algorithm = Column(String, nullable=False)
+    # PRZYWRÓCONA LINIJKA PONIŻEJ:
+    number_of_passes = Column(Integer, default=12) 
+    
     user = relationship("User", back_populates="password", uselist=False)
 
 class GroupMember(Base):
@@ -36,12 +39,11 @@ class User(Base):
     first_name = Column(String)
     last_name = Column(String)
     description = Column(String, nullable=True)
-    profile_picture_url = Column(String, nullable=True) # WF.60
+    profile_picture_url = Column(String, nullable=True) 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     password_id = Column(UUID(as_uuid=True), ForeignKey("passwords.id"))
     
     password = relationship("Password", back_populates="user")
-    # Ważne: passive_deletes pozwala zachować notatki po usunięciu usera (WF.71)
     notes = relationship("Note", back_populates="owner") 
     groups = relationship("GroupMember", back_populates="user", cascade="all, delete-orphan")
     shared_notes = relationship("Note", secondary="note_shares", backref="shared_with_users")
@@ -51,7 +53,7 @@ class Group(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, unique=True, index=True)
     description = Column(String, nullable=True)
-    profile_picture_url = Column(String, nullable=True) # WF.92
+    profile_picture_url = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     members = relationship("GroupMember", back_populates="group", cascade="all, delete-orphan")
     notes = relationship("Note", back_populates="group")
@@ -67,7 +69,6 @@ class Note(Base):
     is_deleted = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
-    # WF.71 - nullable=True pozwala notatce istnieć bez autora
     created_by = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     group_id = Column(UUID(as_uuid=True), ForeignKey("groups.id"), nullable=True)
     
