@@ -7,9 +7,7 @@ BEGIN;
 CREATE TABLE Passwords (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     hash VARCHAR(256) NOT NULL,
-    salt VARCHAR(256) NOT NULL,
     algorithm VARCHAR(32) NOT NULL,
-    number_of_passes INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

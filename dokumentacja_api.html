@@ -1,0 +1,1026 @@
+<!doctype html>
+<html>
+    <head>
+        <title>GeoNotatki API</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="redoc-container"></div>
+        <script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0-rc.55/bundles/redoc.standalone.js"></script>
+        <script>
+            // Wczytanie danych
+            const spec = {
+                openapi: "3.1.0",
+                info: {
+                    title: "GeoNotatki Full API",
+                    description: "https://github.com/SmigorX/BazyDanychProjekt",
+                    version: "0.1.0",
+                },
+                paths: {
+                    "/": {
+                        get: {
+                            summary: "Root",
+                            operationId: "root__get",
+                            responses: {
+                                200: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": { schema: {} },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "/register": {
+                        post: {
+                            summary: "Register User",
+                            operationId: "register_user_register_post",
+                            requestBody: {
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            $ref: "#/components/schemas/UserCreate",
+                                        },
+                                    },
+                                },
+                                required: true,
+                            },
+                            responses: {
+                                201: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/UserResponse",
+                                            },
+                                        },
+                                    },
+                                },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "/users/{user_id}/change-password": {
+                        post: {
+                            summary: "Change Password",
+                            operationId:
+                                "change_password_users__user_id__change_password_post",
+                            parameters: [
+                                {
+                                    name: "user_id",
+                                    in: "path",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "User Id",
+                                    },
+                                },
+                            ],
+                            requestBody: {
+                                required: true,
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            $ref: "#/components/schemas/PasswordChange",
+                                        },
+                                    },
+                                },
+                            },
+                            responses: {
+                                200: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": { schema: {} },
+                                    },
+                                },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "/users/{user_id}": {
+                        patch: {
+                            summary: "Update User",
+                            operationId: "update_user_users__user_id__patch",
+                            parameters: [
+                                {
+                                    name: "user_id",
+                                    in: "path",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "User Id",
+                                    },
+                                },
+                            ],
+                            requestBody: {
+                                required: true,
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            $ref: "#/components/schemas/UserUpdate",
+                                        },
+                                    },
+                                },
+                            },
+                            responses: {
+                                200: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/UserResponse",
+                                            },
+                                        },
+                                    },
+                                },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        delete: {
+                            summary: "Delete User",
+                            operationId: "delete_user_users__user_id__delete",
+                            parameters: [
+                                {
+                                    name: "user_id",
+                                    in: "path",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "User Id",
+                                    },
+                                },
+                                {
+                                    name: "delete_notes",
+                                    in: "query",
+                                    required: false,
+                                    schema: {
+                                        type: "boolean",
+                                        default: true,
+                                        title: "Delete Notes",
+                                    },
+                                },
+                            ],
+                            responses: {
+                                204: { description: "Successful Response" },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "/groups": {
+                        post: {
+                            summary: "Create Group",
+                            operationId: "create_group_groups_post",
+                            requestBody: {
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            $ref: "#/components/schemas/GroupCreate",
+                                        },
+                                    },
+                                },
+                                required: true,
+                            },
+                            responses: {
+                                201: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/GroupResponse",
+                                            },
+                                        },
+                                    },
+                                },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "/groups/{group_id}": {
+                        patch: {
+                            summary: "Update Group",
+                            operationId: "update_group_groups__group_id__patch",
+                            parameters: [
+                                {
+                                    name: "group_id",
+                                    in: "path",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "Group Id",
+                                    },
+                                },
+                            ],
+                            requestBody: {
+                                required: true,
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            $ref: "#/components/schemas/GroupUpdate",
+                                        },
+                                    },
+                                },
+                            },
+                            responses: {
+                                200: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/GroupResponse",
+                                            },
+                                        },
+                                    },
+                                },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "/groups/{group_id}/members": {
+                        post: {
+                            summary: "Add Member",
+                            operationId:
+                                "add_member_groups__group_id__members_post",
+                            parameters: [
+                                {
+                                    name: "group_id",
+                                    in: "path",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "Group Id",
+                                    },
+                                },
+                            ],
+                            requestBody: {
+                                required: true,
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            $ref: "#/components/schemas/MemberAdd",
+                                        },
+                                    },
+                                },
+                            },
+                            responses: {
+                                201: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": { schema: {} },
+                                    },
+                                },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "/groups/{group_id}/members/{user_id}": {
+                        delete: {
+                            summary: "Remove Member",
+                            operationId:
+                                "remove_member_groups__group_id__members__user_id__delete",
+                            parameters: [
+                                {
+                                    name: "group_id",
+                                    in: "path",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "Group Id",
+                                    },
+                                },
+                                {
+                                    name: "user_id",
+                                    in: "path",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "User Id",
+                                    },
+                                },
+                                {
+                                    name: "requesting_user_id",
+                                    in: "query",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "Requesting User Id",
+                                    },
+                                },
+                            ],
+                            responses: {
+                                200: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": { schema: {} },
+                                    },
+                                },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "/notes": {
+                        get: {
+                            summary: "Get Notes",
+                            operationId: "get_notes_notes_get",
+                            responses: {
+                                200: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                items: {
+                                                    $ref: "#/components/schemas/NoteResponse",
+                                                },
+                                                type: "array",
+                                                title: "Response Get Notes Notes Get",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        post: {
+                            summary: "Create Note",
+                            operationId: "create_note_notes_post",
+                            requestBody: {
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            $ref: "#/components/schemas/NoteCreate",
+                                        },
+                                    },
+                                },
+                                required: true,
+                            },
+                            responses: {
+                                201: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/NoteResponse",
+                                            },
+                                        },
+                                    },
+                                },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "/notes/{note_id}/share": {
+                        post: {
+                            summary: "Share Note",
+                            operationId:
+                                "share_note_notes__note_id__share_post",
+                            parameters: [
+                                {
+                                    name: "note_id",
+                                    in: "path",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "Note Id",
+                                    },
+                                },
+                            ],
+                            requestBody: {
+                                required: true,
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            $ref: "#/components/schemas/NoteShareCreate",
+                                        },
+                                    },
+                                },
+                            },
+                            responses: {
+                                201: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": { schema: {} },
+                                    },
+                                },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                    "/notes/{note_id}": {
+                        patch: {
+                            summary: "Update Note",
+                            operationId: "update_note_notes__note_id__patch",
+                            parameters: [
+                                {
+                                    name: "note_id",
+                                    in: "path",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "Note Id",
+                                    },
+                                },
+                            ],
+                            requestBody: {
+                                required: true,
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            $ref: "#/components/schemas/NoteUpdate",
+                                        },
+                                    },
+                                },
+                            },
+                            responses: {
+                                200: {
+                                    description: "Successful Response",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/NoteResponse",
+                                            },
+                                        },
+                                    },
+                                },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        delete: {
+                            summary: "Delete Note",
+                            operationId: "delete_note_notes__note_id__delete",
+                            parameters: [
+                                {
+                                    name: "note_id",
+                                    in: "path",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "Note Id",
+                                    },
+                                },
+                                {
+                                    name: "requesting_user_id",
+                                    in: "query",
+                                    required: true,
+                                    schema: {
+                                        type: "string",
+                                        title: "Requesting User Id",
+                                    },
+                                },
+                            ],
+                            responses: {
+                                204: { description: "Successful Response" },
+                                422: {
+                                    description: "Validation Error",
+                                    content: {
+                                        "application/json": {
+                                            schema: {
+                                                $ref: "#/components/schemas/HTTPValidationError",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+                components: {
+                    schemas: {
+                        GroupCreate: {
+                            properties: {
+                                name: { type: "string", title: "Name" },
+                                description: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Description",
+                                },
+                                profile_picture_url: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Profile Picture Url",
+                                },
+                                creator_user_id: {
+                                    type: "string",
+                                    title: "Creator User Id",
+                                },
+                            },
+                            type: "object",
+                            required: ["name", "creator_user_id"],
+                            title: "GroupCreate",
+                        },
+                        GroupResponse: {
+                            properties: {
+                                id: {
+                                    type: "string",
+                                    format: "uuid",
+                                    title: "Id",
+                                },
+                                name: { type: "string", title: "Name" },
+                                description: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Description",
+                                },
+                                profile_picture_url: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Profile Picture Url",
+                                },
+                                created_at: {
+                                    type: "string",
+                                    format: "date-time",
+                                    title: "Created At",
+                                },
+                            },
+                            type: "object",
+                            required: [
+                                "id",
+                                "name",
+                                "description",
+                                "profile_picture_url",
+                                "created_at",
+                            ],
+                            title: "GroupResponse",
+                        },
+                        GroupUpdate: {
+                            properties: {
+                                description: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Description",
+                                },
+                                profile_picture_url: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Profile Picture Url",
+                                },
+                                requesting_user_id: {
+                                    type: "string",
+                                    title: "Requesting User Id",
+                                },
+                            },
+                            type: "object",
+                            required: ["requesting_user_id"],
+                            title: "GroupUpdate",
+                        },
+                        HTTPValidationError: {
+                            properties: {
+                                detail: {
+                                    items: {
+                                        $ref: "#/components/schemas/ValidationError",
+                                    },
+                                    type: "array",
+                                    title: "Detail",
+                                },
+                            },
+                            type: "object",
+                            title: "HTTPValidationError",
+                        },
+                        MemberAdd: {
+                            properties: {
+                                user_id_to_add: {
+                                    type: "string",
+                                    title: "User Id To Add",
+                                },
+                                role: {
+                                    type: "string",
+                                    title: "Role",
+                                    default: "member",
+                                },
+                                requesting_user_id: {
+                                    type: "string",
+                                    title: "Requesting User Id",
+                                },
+                            },
+                            type: "object",
+                            required: ["user_id_to_add", "requesting_user_id"],
+                            title: "MemberAdd",
+                        },
+                        NoteCreate: {
+                            properties: {
+                                title: { type: "string", title: "Title" },
+                                content: { type: "string", title: "Content" },
+                                color: {
+                                    type: "string",
+                                    title: "Color",
+                                    default: "#FFFFFF",
+                                },
+                                latitude: { type: "number", title: "Latitude" },
+                                longitude: {
+                                    type: "number",
+                                    title: "Longitude",
+                                },
+                                created_by_user_id: {
+                                    type: "string",
+                                    title: "Created By User Id",
+                                },
+                                group_id: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Group Id",
+                                },
+                            },
+                            type: "object",
+                            required: [
+                                "title",
+                                "content",
+                                "latitude",
+                                "longitude",
+                                "created_by_user_id",
+                            ],
+                            title: "NoteCreate",
+                        },
+                        NoteResponse: {
+                            properties: {
+                                id: {
+                                    type: "string",
+                                    format: "uuid",
+                                    title: "Id",
+                                },
+                                title: { type: "string", title: "Title" },
+                                content: { type: "string", title: "Content" },
+                                color: { type: "string", title: "Color" },
+                                latitude: { type: "number", title: "Latitude" },
+                                longitude: {
+                                    type: "number",
+                                    title: "Longitude",
+                                },
+                                created_at: {
+                                    type: "string",
+                                    format: "date-time",
+                                    title: "Created At",
+                                },
+                                created_by: {
+                                    anyOf: [
+                                        { type: "string", format: "uuid" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Created By",
+                                },
+                                group_id: {
+                                    anyOf: [
+                                        { type: "string", format: "uuid" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Group Id",
+                                },
+                            },
+                            type: "object",
+                            required: [
+                                "id",
+                                "title",
+                                "content",
+                                "color",
+                                "latitude",
+                                "longitude",
+                                "created_at",
+                                "created_by",
+                                "group_id",
+                            ],
+                            title: "NoteResponse",
+                        },
+                        NoteShareCreate: {
+                            properties: {
+                                user_id_to_share_with: {
+                                    type: "string",
+                                    title: "User Id To Share With",
+                                },
+                                can_edit: {
+                                    type: "boolean",
+                                    title: "Can Edit",
+                                    default: false,
+                                },
+                                requesting_user_id: {
+                                    type: "string",
+                                    title: "Requesting User Id",
+                                },
+                            },
+                            type: "object",
+                            required: [
+                                "user_id_to_share_with",
+                                "requesting_user_id",
+                            ],
+                            title: "NoteShareCreate",
+                        },
+                        NoteUpdate: {
+                            properties: {
+                                title: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Title",
+                                },
+                                content: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Content",
+                                },
+                                color: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Color",
+                                },
+                                group_id: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Group Id",
+                                },
+                                requesting_user_id: {
+                                    type: "string",
+                                    title: "Requesting User Id",
+                                },
+                            },
+                            type: "object",
+                            required: ["requesting_user_id"],
+                            title: "NoteUpdate",
+                        },
+                        PasswordChange: {
+                            properties: {
+                                old_password: {
+                                    type: "string",
+                                    title: "Old Password",
+                                },
+                                new_password: {
+                                    type: "string",
+                                    title: "New Password",
+                                },
+                            },
+                            type: "object",
+                            required: ["old_password", "new_password"],
+                            title: "PasswordChange",
+                        },
+                        UserCreate: {
+                            properties: {
+                                email: {
+                                    type: "string",
+                                    format: "email",
+                                    title: "Email",
+                                },
+                                password: { type: "string", title: "Password" },
+                                first_name: {
+                                    type: "string",
+                                    title: "First Name",
+                                },
+                                last_name: {
+                                    type: "string",
+                                    title: "Last Name",
+                                },
+                            },
+                            type: "object",
+                            required: [
+                                "email",
+                                "password",
+                                "first_name",
+                                "last_name",
+                            ],
+                            title: "UserCreate",
+                        },
+                        UserResponse: {
+                            properties: {
+                                id: {
+                                    type: "string",
+                                    format: "uuid",
+                                    title: "Id",
+                                },
+                                email: {
+                                    type: "string",
+                                    format: "email",
+                                    title: "Email",
+                                },
+                                first_name: {
+                                    type: "string",
+                                    title: "First Name",
+                                },
+                                last_name: {
+                                    type: "string",
+                                    title: "Last Name",
+                                },
+                                description: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Description",
+                                },
+                                profile_picture_url: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Profile Picture Url",
+                                },
+                                created_at: {
+                                    type: "string",
+                                    format: "date-time",
+                                    title: "Created At",
+                                },
+                            },
+                            type: "object",
+                            required: [
+                                "id",
+                                "email",
+                                "first_name",
+                                "last_name",
+                                "created_at",
+                            ],
+                            title: "UserResponse",
+                        },
+                        UserUpdate: {
+                            properties: {
+                                first_name: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "First Name",
+                                },
+                                last_name: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Last Name",
+                                },
+                                description: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Description",
+                                },
+                                profile_picture_url: {
+                                    anyOf: [
+                                        { type: "string" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Profile Picture Url",
+                                },
+                                email: {
+                                    anyOf: [
+                                        { type: "string", format: "email" },
+                                        { type: "null" },
+                                    ],
+                                    title: "Email",
+                                },
+                            },
+                            type: "object",
+                            title: "UserUpdate",
+                        },
+                        ValidationError: {
+                            properties: {
+                                loc: {
+                                    items: {
+                                        anyOf: [
+                                            { type: "string" },
+                                            { type: "integer" },
+                                        ],
+                                    },
+                                    type: "array",
+                                    title: "Location",
+                                },
+                                msg: { type: "string", title: "Message" },
+                                type: { type: "string", title: "Error Type" },
+                            },
+                            type: "object",
+                            required: ["loc", "msg", "type"],
+                            title: "ValidationError",
+                        },
+                    },
+                },
+            };
+
+            // Inicjalizacja ReDoc w kontenerze
+            Redoc.init(
+                spec,
+                {
+                    scrollYOffset: 50,
+                },
+                document.getElementById("redoc-container"),
+            );
+        </script>
+    </body>
+</html>
