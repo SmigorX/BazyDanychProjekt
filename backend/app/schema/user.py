@@ -1,35 +1,31 @@
-from pydantic import BaseModel, EmailStr
-
+from pydantic import BaseModel
+from typing import Optional
 
 class NewUserSchema(BaseModel):
-    email: EmailStr
+    email: str
     first_name: str
     last_name: str
     hash: str
-
 
 class LoginUserSchema(BaseModel):
-    email: EmailStr
+    email: str
     hash: str
-
 
 class UpdateUserSchema(BaseModel):
-    email: EmailStr
+    email: str
     first_name: str
     last_name: str
-    description: str
-    profile_picture: str
-
+    profile_picture: Optional[str] = None
+    description: Optional[str] = "" 
 
 class UpdateUserPasswordSchema(BaseModel):
-    email: EmailStr
+    email: str
     hash: str
 
-
 class GetUserDataSchema(BaseModel):
-    email: EmailStr
+    id: str
+    email: str
     first_name: str
     last_name: str
-    description: str
-    profile_picture: str
-    id: int
+    profile_picture: Optional[str] = None
+    description: Optional[str] = "" 

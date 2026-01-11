@@ -1,4 +1,15 @@
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 BEGIN;
+
+DROP TABLE IF EXISTS Note_Tags CASCADE;
+DROP TABLE IF EXISTS Tags CASCADE;
+DROP TABLE IF EXISTS Note_Access CASCADE;
+DROP TABLE IF EXISTS Notes CASCADE;
+DROP TABLE IF EXISTS Group_Members CASCADE;
+DROP TABLE IF EXISTS Groups CASCADE;
+DROP TABLE IF EXISTS Users CASCADE;
+DROP TABLE IF EXISTS Passwords CASCADE;
 
 CREATE TABLE Passwords (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -55,15 +66,23 @@ CREATE TABLE Notes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(255) NOT NULL,
     content TEXT,
-    latitude DECIMAL(10, 8) NOT NULL,
-    longitude DECIMAL(11, 8) NOT NULL,
+    
+    latitude DECIMAL(10, 8) DEFAULT 52.2297,
+    longitude DECIMAL(11, 8) DEFAULT 21.0122,
+    
     color_hex VARCHAR(7),
     created_by UUID NOT NULL,
+    
+    group_id UUID, 
+    tags TEXT[],
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
     deleted_at TIMESTAMP,
-    FOREIGN KEY (created_by) REFERENCES Users(id)
+    
+    FOREIGN KEY (created_by) REFERENCES Users(id),
+    FOREIGN KEY (group_id) REFERENCES Groups(id) ON DELETE SET NULL
 );
 
 CREATE TABLE Note_Access (
@@ -106,6 +125,7 @@ CREATE TABLE Note_Tags (
 
 COMMIT;
 
+
 CREATE INDEX idx_users_email ON Users(email);
 CREATE INDEX idx_users_created_at ON Users(created_at);
 CREATE INDEX idx_users_is_deleted ON Users(is_deleted);
@@ -116,11 +136,8 @@ CREATE INDEX idx_groups_created_by ON Groups(created_by);
 CREATE INDEX idx_groups_created_at ON Groups(created_at);
 CREATE INDEX idx_groups_is_deleted ON Groups(is_deleted);
 
-CREATE INDEX idx_group_roles_group ON Group_Roles(group_id);
-CREATE INDEX idx_group_roles_default ON Group_Roles(is_default);
-
 CREATE INDEX idx_group_members_user ON Group_Members(user_id);
-CREATE INDEX idx_group_members_role ON Group_Members(role_id);
+CREATE INDEX idx_group_members_role ON Group_Members(role); 
 CREATE INDEX idx_group_members_active ON Group_Members(is_active);
 
 CREATE INDEX idx_notes_created_by ON Notes(created_by);
@@ -128,6 +145,7 @@ CREATE INDEX idx_notes_created_at ON Notes(created_at);
 CREATE INDEX idx_notes_location ON Notes(latitude, longitude);
 CREATE INDEX idx_notes_is_deleted ON Notes(is_deleted);
 CREATE INDEX idx_notes_updated_at ON Notes(updated_at);
+CREATE INDEX idx_notes_group_id ON Notes(group_id); 
 
 CREATE INDEX idx_note_access_note ON Note_Access(note_id);
 CREATE INDEX idx_note_access_user ON Note_Access(user_id);

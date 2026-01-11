@@ -1,8 +1,8 @@
-from pydantic import BaseModel, EmailStr
-
+from pydantic import BaseModel
 
 class TokenModel(BaseModel):
-    email: EmailStr
-    profile_picture_url: str
+    id: str
+    email: str
     first_name: str
     last_name: str
+    profile_picture_url: str

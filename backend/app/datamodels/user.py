@@ -31,3 +31,4 @@ class UpdateUserPasswordModel(BaseModel):
 
 class DeleteUserModel(BaseModel):
     jwt: str
+    password: str 

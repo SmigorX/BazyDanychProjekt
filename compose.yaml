@@ -1,28 +1,39 @@
 services:
-    postgres:
-        image: postgres:alpine
-        restart: always
-        environment:
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_USER: postgres
-            POSTGRES_DB: project
-        volumes:
-            - ./db:/docker-entrypoint-initdb.d:ro
-        healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U postgres"]
-            interval: 10s
-            timeout: 5s
-            retries: 5
-        network_mode: "host"
+  postgres:
+    image: postgres:18-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: project
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-    backend:
-        build:
-            context: ./backend
-            dockerfile: Dockerfile
-        restart: always
-        depends_on:
-            postgres:
-                condition: service_healthy
-        environment:
-            DB_URL: postgres://postgres:postgres@localhost:5432/project
-        network_mode: "host"
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/project
+      PYTHONPATH: /backend/app
+      JWT_SIGNATURE_KEY: "super-tajny-klucz-do-podpisywania-tokenow-jwt"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  postgres_data:

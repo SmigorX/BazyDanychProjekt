@@ -1,5 +1,16 @@
-**/venv/
+# Baza danych
+pgdata/
+postgres-data/
+
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+venv/
 .env
-db/data/
+
+# Frontend
+node_modules/
+dist/
+build/
+.DS_Store

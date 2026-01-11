@@ -72,6 +72,7 @@ def update_user_profile_data(user_data: UpdateUserModel):
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     if token.email != user_data.email:
         raise HTTPException(status_code=403, detail="Token does not match user email")
+    
     updated_user = UpdateUserSchema(
         email=user_data.email,
         first_name=user_data.first_name,
@@ -81,7 +82,9 @@ def update_user_profile_data(user_data: UpdateUserModel):
     )
     try:
         update_user_data(updated_user)
+        
         new_token_data = TokenModel(
+            id=token.id, # <--- TUTAJ BRAKOWAŁO ID
             email=user_data.email,
             first_name=user_data.first_name,
             last_name=user_data.last_name,
@@ -128,7 +131,7 @@ def update_user_password_data(user_data: UpdateUserPasswordModel):
 
 
 @router.get("/api/v1/users/{userid}", tags=["users"])
-def get_user_data(userid: str):
+def get_user_data_api(userid: str):
     try:
         user_data = get_user_data(userid)
         if user_data is None:
@@ -140,7 +143,7 @@ def get_user_data(userid: str):
 
 
 @router.delete("/api/v1/users/{userid}", tags=["users"])
-def delete_user(userid: str, body: DeleteUserModel):
+def delete_user_api(userid: str, body: DeleteUserModel):
     token = verify_jwt_token(body.jwt)
     if token is None:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
@@ -161,3 +164,21 @@ def delete_user(userid: str, body: DeleteUserModel):
     except Exception as e:
         print(f"delete_user api error: {e}")
         raise HTTPException(status_code=400, detail=str(e))
+    
+@router.post("/api/v1/users/update/email", tags=["users"])
+def update_email_api(body: dict):
+    email = get_email_from_token(body.get("jwt"))
+    new_email = body.get("new_email")
+    password = body.get("password")
+    
+    stored_hash = get_user_password_hash(email)
+    if not verify_password(password, stored_hash):
+        raise HTTPException(status_code=401, detail="Błędne hasło")
+
+    try:
+        update_user_email({"old_email": email, "new_email": new_email})
+        token_data = get_user_token_data(new_email)
+        new_token = create_access_token(token_data)
+        return {"access_token": new_token, "message": "Email zaktualizowany"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))    
