@@ -17,7 +17,7 @@ CREATE TABLE Users (
     is_email_verified BOOLEAN DEFAULT FALSE,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
-    profile_picture_url VARCHAR(500),
+    picture_url VARCHAR(500),
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -32,7 +32,7 @@ CREATE TABLE Groups (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    group_picture_url VARCHAR(500),
+    picture_url VARCHAR(500),
     created_by UUID NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -42,27 +42,16 @@ CREATE TABLE Groups (
     FOREIGN KEY (created_by) REFERENCES Users(id)
 );
 
-CREATE TABLE Group_Roles (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(50) NOT NULL,
-    permissions JSONB,
-    group_id UUID NOT NULL,
-    is_default BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (group_id) REFERENCES Groups(id) ON DELETE CASCADE
-);
-
 CREATE TABLE Group_Members (
     group_id UUID NOT NULL,
     user_id UUID NOT NULL,
-    role_id UUID NOT NULL,
+    role VARCHAR(20) NOT NULL CHECK (role IN ('member', 'admin', 'owner')),
     joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     invited_by UUID,
     is_active BOOLEAN DEFAULT TRUE,
     PRIMARY KEY (group_id, user_id),
     FOREIGN KEY (group_id) REFERENCES Groups(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES Group_Roles(id),
     FOREIGN KEY (invited_by) REFERENCES Users(id)
 );
 
@@ -119,15 +108,6 @@ CREATE TABLE Note_Tags (
     FOREIGN KEY (tag_id) REFERENCES Tags(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Revoked_Tokens (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    token_hash VARCHAR(256) NOT NULL UNIQUE,
-    user_id UUID NOT NULL,
-    revoked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP NOT NULL, 
-    reason VARCHAR(100),
-    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE
-);
 COMMIT;
 
 CREATE INDEX idx_users_email ON Users(email);
