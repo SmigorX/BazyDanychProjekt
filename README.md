@@ -1,5 +1,5 @@
 > [!WARNING]
-> To repo jest WIP i podlega ciągłym zmianą.
+> To repo jest ~~WIP i podlega ciągłym zmianą~~ epickie.
 
 # Projekt na bazy danych - geolokalizacyjne notatki.
 
