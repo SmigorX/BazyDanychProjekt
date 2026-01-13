@@ -1,13 +1,14 @@
 import os
 
 from sqlalchemy import create_engine
+from sqlalchemy.pool import QueuePool
 
-_connection = None
+_engine = None
 
 
-def get_connection():
-    global _connection
-    if not _connection:
+def get_engine():
+    global _engine
+    if not _engine:
         try:
             connection_string = os.getenv("DATABASE_URL")
 
@@ -15,9 +16,20 @@ def get_connection():
                 print("DATABASE_URL environment variable is not set.")
                 exit(1)
 
-            engine = create_engine(connection_string)
-            _connection = engine.connect()
+            _engine = create_engine(
+                connection_string,
+                poolclass=QueuePool,
+                pool_size=5,
+                max_overflow=10,
+                pool_pre_ping=True
+            )
         except Exception as e:
-            print(f"Error connecting to the database: {e}")
+            print(f"Error creating database engine: {e}")
             exit(1)
-    return _connection
+    return _engine
+
+
+def get_connection():
+    """Get a new connection from the pool for each request"""
+    engine = get_engine()
+    return engine.connect()

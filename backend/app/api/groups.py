@@ -26,7 +26,9 @@ def get_email_from_token(token: str):
         key = get_jwt_signature_key()
         payload = jwt.decode(token, key, algorithms=["HS256"])
         return payload.get("sub")
-    except:
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 @router.post("/groups/create", tags=["groups"])

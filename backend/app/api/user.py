@@ -15,6 +15,7 @@ from db.querries.user import (
     get_user_token_data,
     update_user_data,
     update_user_password,
+    update_user_email,
 )
 from fastapi import APIRouter, HTTPException
 from schema.user import (
@@ -167,18 +168,26 @@ def delete_user_api(userid: str, body: DeleteUserModel):
     
 @router.post("/api/v1/users/update/email", tags=["users"])
 def update_email_api(body: dict):
-    email = get_email_from_token(body.get("jwt"))
+    token = verify_jwt_token(body.get("jwt"))
+    if token is None:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+    email = token.email
     new_email = body.get("new_email")
     password = body.get("password")
-    
+
     stored_hash = get_user_password_hash(email)
-    if not verify_password(password, stored_hash):
+    if stored_hash is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    password_hash = hash_password(password, email)
+    if password_hash != stored_hash:
         raise HTTPException(status_code=401, detail="Błędne hasło")
 
     try:
         update_user_email({"old_email": email, "new_email": new_email})
         token_data = get_user_token_data(new_email)
-        new_token = create_access_token(token_data)
+        new_token = generate_jwt_token(token_data)
         return {"access_token": new_token, "message": "Email zaktualizowany"}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))    

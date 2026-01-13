@@ -233,23 +233,4 @@ def get_user_groups(email):
         print(f"Get user groups error: {e}")
         return []
 
-def update_group(group_id: str, data: dict):
-    conn = get_connection()
-    try:
-        query = text("""
-            UPDATE Groups 
-            SET name = :name, 
-                description = :description, 
-                picture_url = :picture_url 
-            WHERE id = :id
-        """)
-        conn.execute(query, {
-            "name": data['name'],
-            "description": data['description'],
-            "picture_url": data['picture_url'],
-            "id": group_id
-        })
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        raise e    
+    

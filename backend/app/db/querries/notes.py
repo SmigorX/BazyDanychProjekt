@@ -18,11 +18,27 @@ def create_note(note_data: NoteModel, email: str):
         lat = 52.23
         lng = 21.01
         color = "#3b82f6"
-        
+
         for t in note_data.tags:
-            if t.startswith("lat:"): lat = float(t.split(":")[1])
-            if t.startswith("lng:"): lng = float(t.split(":")[1])
-            if t.startswith("col:"): color = t.split(":")[1]
+            try:
+                if t.startswith("lat:"):
+                    parts = t.split(":", 1)
+                    if len(parts) == 2:
+                        parsed_lat = float(parts[1])
+                        if -90 <= parsed_lat <= 90:
+                            lat = parsed_lat
+                elif t.startswith("lng:"):
+                    parts = t.split(":", 1)
+                    if len(parts) == 2:
+                        parsed_lng = float(parts[1])
+                        if -180 <= parsed_lng <= 180:
+                            lng = parsed_lng
+                elif t.startswith("col:"):
+                    parts = t.split(":", 1)
+                    if len(parts) == 2 and len(parts[1]) == 7 and parts[1].startswith("#"):
+                        color = parts[1]
+            except (ValueError, IndexError):
+                continue
 
         gid = note_data.group_id if note_data.group_id and len(note_data.group_id) > 10 else None
 
@@ -109,9 +125,25 @@ def update_note(note_data: UpdateNoteModel, email: str):
         lng = 21.01
         color = "#3b82f6"
         for t in note_data.tags:
-            if t.startswith("lat:"): lat = float(t.split(":")[1])
-            if t.startswith("lng:"): lng = float(t.split(":")[1])
-            if t.startswith("col:"): color = t.split(":")[1]
+            try:
+                if t.startswith("lat:"):
+                    parts = t.split(":", 1)
+                    if len(parts) == 2:
+                        parsed_lat = float(parts[1])
+                        if -90 <= parsed_lat <= 90:
+                            lat = parsed_lat
+                elif t.startswith("lng:"):
+                    parts = t.split(":", 1)
+                    if len(parts) == 2:
+                        parsed_lng = float(parts[1])
+                        if -180 <= parsed_lng <= 180:
+                            lng = parsed_lng
+                elif t.startswith("col:"):
+                    parts = t.split(":", 1)
+                    if len(parts) == 2 and len(parts[1]) == 7 and parts[1].startswith("#"):
+                        color = parts[1]
+            except (ValueError, IndexError):
+                continue
 
         gid = note_data.group_id if note_data.group_id and len(note_data.group_id) > 10 else None
 
